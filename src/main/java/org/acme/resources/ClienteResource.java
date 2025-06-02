@@ -1,19 +1,26 @@
 package org.acme.resources;
 
 import jakarta.inject.Inject;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.OneToMany;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.acme.entitys.Cliente;
+import org.acme.entitys.Pedido;
 import org.acme.repository.ClienteRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Path("/clientes")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class ClienteResource {
+
+    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Pedido> pedidos = new ArrayList<>();
 
     @Inject
     ClienteRepository clienteRepository;

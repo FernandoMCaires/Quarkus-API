@@ -1,7 +1,8 @@
 package org.acme.entitys;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -14,10 +15,15 @@ public class Produto {
     private String nome;
     private Double preco;
 
-    @ManyToMany(mappedBy = "produtos")
-    private List<Pedido> pedidos;
+    @ManyToMany(mappedBy = "produtos", fetch = FetchType.EAGER)
+    @JsonIgnore
+    private List<Pedido> pedidos = new ArrayList<>();
 
-    // Getters e Setters
+    @Transient
+    @JsonIgnore
+    private int quantidadePedidos;
+
+
     public Long getId() {
         return id;
     }
@@ -48,5 +54,12 @@ public class Produto {
 
     public void setPedidos(List<Pedido> pedidos) {
         this.pedidos = pedidos;
+    }
+
+    public int getQuantidadePedidos() {
+        return pedidos != null ? pedidos.size() : 0;
+    }
+
+    public void setQuantidadePedidos(int quantidade) {
     }
 }

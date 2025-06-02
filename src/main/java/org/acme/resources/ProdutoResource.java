@@ -20,13 +20,24 @@ public class ProdutoResource {
 
     @GET
     public List<Produto> listarTodos() {
-        return produtoRepository.listAll();
+        List<Produto> produtos = produtoRepository.listAll();
+        for (Produto produto : produtos) {
+            int quantidade = produto.getPedidos() != null ? produto.getPedidos().size() : 0;
+            produto.setQuantidadePedidos(quantidade);
+        }
+        return produtos;
     }
+
 
     @GET
     @Path("/{id}")
     public Produto buscarPorId(@PathParam("id") Long id) {
-        return produtoRepository.findById(id);
+        Produto produto = produtoRepository.findById(id);
+        if (produto == null) {
+            throw new NotFoundException("Produto não encontrado");
+        }
+        produto.setQuantidadePedidos(produto.getPedidos() != null ? produto.getPedidos().size() : 0);
+        return produto;
     }
 
     @POST
@@ -59,7 +70,6 @@ public class ProdutoResource {
         if (!deletado) {
             throw new NotFoundException("Produto não encontrado");
         }
-
         return Response.noContent().build();
     }
 }

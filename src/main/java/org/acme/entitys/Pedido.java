@@ -1,7 +1,7 @@
 package org.acme.entitys;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-
 import java.util.List;
 
 @Entity
@@ -13,7 +13,7 @@ public class Pedido {
 
     private String descricao;
     private Double valor;
-
+    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "cliente_id")
     private Cliente cliente;
@@ -26,7 +26,6 @@ public class Pedido {
     )
     private List<Produto> produtos;
 
-    // Getters e Setters
     public Long getId() {
         return id;
     }

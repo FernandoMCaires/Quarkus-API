@@ -1,5 +1,6 @@
 package org.acme.entitys;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.util.List;
 
@@ -12,7 +13,7 @@ public class Cliente {
 
     private String nome;
     private String email;
-
+    @JsonManagedReference
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Pedido> pedidos;
 
