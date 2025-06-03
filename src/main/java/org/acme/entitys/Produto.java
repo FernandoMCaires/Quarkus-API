@@ -1,8 +1,8 @@
 package org.acme.entitys;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -15,15 +15,16 @@ public class Produto {
     private String nome;
     private Double preco;
 
-    @ManyToMany(mappedBy = "produtos", fetch = FetchType.EAGER)
-    @JsonIgnore
-    private List<Pedido> pedidos = new ArrayList<>();
-
+    // Quantidade é usada apenas no contexto de pedidos, não persiste no banco
     @Transient
+    @JsonInclude(JsonInclude.Include.NON_NULL) // Inclui este campo no JSON apenas se não for null
+    private Integer quantidade;
+
     @JsonIgnore
-    private int quantidadePedidos;
+    @ManyToMany(mappedBy = "produtos")
+    private List<Pedido> pedidos;
 
-
+    // Getters e setters
     public Long getId() {
         return id;
     }
@@ -48,18 +49,19 @@ public class Produto {
         this.preco = preco;
     }
 
+    public Integer getQuantidade() {
+        return quantidade;
+    }
+
+    public void setQuantidade(Integer quantidade) {
+        this.quantidade = quantidade;
+    }
+
     public List<Pedido> getPedidos() {
         return pedidos;
     }
 
     public void setPedidos(List<Pedido> pedidos) {
         this.pedidos = pedidos;
-    }
-
-    public int getQuantidadePedidos() {
-        return pedidos != null ? pedidos.size() : 0;
-    }
-
-    public void setQuantidadePedidos(int quantidade) {
     }
 }

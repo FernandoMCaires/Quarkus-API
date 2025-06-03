@@ -23,7 +23,7 @@ public class ProdutoResource {
         List<Produto> produtos = produtoRepository.listAll();
         for (Produto produto : produtos) {
             int quantidade = produto.getPedidos() != null ? produto.getPedidos().size() : 0;
-            produto.setQuantidadePedidos(quantidade);
+            produto.setQuantidade(quantidade);
         }
         return produtos;
     }
@@ -36,7 +36,7 @@ public class ProdutoResource {
         if (produto == null) {
             throw new NotFoundException("Produto não encontrado");
         }
-        produto.setQuantidadePedidos(produto.getPedidos() != null ? produto.getPedidos().size() : 0);
+        produto.setQuantidade(produto.getPedidos() != null ? produto.getPedidos().size() : 0);
         return produto;
     }
 

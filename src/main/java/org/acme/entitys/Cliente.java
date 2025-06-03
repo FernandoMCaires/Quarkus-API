@@ -13,6 +13,10 @@ public class Cliente {
 
     private String nome;
     private String email;
+
+    @Column(unique = true) // Garante que o idempotencyKey seja único
+    private String idempotencyKey;
+
     @JsonManagedReference
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Pedido> pedidos;
@@ -40,6 +44,14 @@ public class Cliente {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getIdempotencyKey() {
+        return idempotencyKey;
+    }
+
+    public void setIdempotencyKey(String idempotencyKey) {
+        this.idempotencyKey = idempotencyKey;
     }
 
     public List<Pedido> getPedidos() {

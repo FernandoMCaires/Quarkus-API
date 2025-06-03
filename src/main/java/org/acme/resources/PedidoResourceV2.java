@@ -15,10 +15,10 @@ import org.acme.repository.ProdutoRepository;
 import java.util.ArrayList;
 import java.util.List;
 
-@Path("/api/v1/pedidos")
+@Path("/api/v2/pedidos")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class PedidoResource {
+public class PedidoResourceV2 {
 
     @Inject
     PedidoRepository pedidoRepository;
@@ -43,13 +43,13 @@ public class PedidoResource {
     @POST
     @Transactional
     public Response salvar(Pedido pedido) {
-        // Buscar cliente completo
+        // Buscar cliente pelo ID
         Cliente cliente = clienteRepository.findById(pedido.getCliente().getId());
         if (cliente == null) {
             throw new NotFoundException("Cliente não encontrado");
         }
 
-        // Buscar produtos completos
+        // Buscar produtos e calcular valor total com base nas quantidades
         List<Produto> produtosCompletos = new ArrayList<>();
         double valorTotal = 0.0;
 
@@ -59,20 +59,26 @@ public class PedidoResource {
                 throw new NotFoundException("Produto com ID " + p.getId() + " não encontrado");
             }
 
-            // Assume que cada produto terá 1 unidade por padrão e exclui menção à quantidade
-            produtoCompleto.setQuantidade(null); // Define quantidade como null para resposta
-            
+            // Determinar a quantidade enviada ou assumir 1 como padrão
+            int quantidade = (p.getQuantidade() != null) ? p.getQuantidade() : 1;
+
+            // Setar a quantidade no produto (para resposta no JSON)
+            produtoCompleto.setQuantidade(quantidade);
+
+            // Adicionar o produto à lista e calcular o valor total
             produtosCompletos.add(produtoCompleto);
-            valorTotal += produtoCompleto.getPreco(); // Soma o preço de 1 unidade
+            valorTotal += produtoCompleto.getPreco() * quantidade;
         }
 
-        // Setar dados no pedido
+        // Atualizar informações do Pedido
         pedido.setCliente(cliente);
         pedido.setProdutos(produtosCompletos);
-        pedido.setValor(valorTotal); // Valor calculado com base nos preços dos produtos
+        pedido.setValor(valorTotal);
 
+        // Persistir o Pedido
         pedidoRepository.persist(pedido);
 
+        // Retornar resposta
         return Response.status(Response.Status.CREATED).entity(pedido).build();
     }
 
